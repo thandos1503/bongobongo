@@ -1,0 +1,351 @@
+{
+	"info": {
+		"_postman_id": "15447d8e-dbff-4122-b70a-7239bc5e4c60",
+		"name": "Bongobongo Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2849832"
+	},
+	"item": [
+		{
+			"name": "Successful Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Verify response code and structure\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property(\"token\");\r",
+							"    pm.expect(jsonData.token).to.be.a(\"string\");\r",
+							"\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "reqres-free-v1",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"eve.holt@reqres.in\",\r\n  \"password\": \"cityslicka\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://reqres.in/api/login",
+					"protocol": "https",
+					"host": [
+						"reqres",
+						"in"
+					],
+					"path": [
+						"api",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Unsuccessful Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\" Test invalid credentials; assert error code/message\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"\r",
+							"     var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property(\"error\");\r",
+							"    pm.expect(jsonData.error).to.eql(\"Missing password\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "reqres-free-v1",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"peter@klaven\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://reqres.in/api/login",
+					"protocol": "https",
+					"host": [
+						"reqres",
+						"in"
+					],
+					"path": [
+						"api",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Fetch Account Details",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const Ajv = require('ajv');\r",
+							"const ajv = new Ajv({ allErrors: true });\r",
+							"\r",
+							"const schema = {\r",
+							"  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\r",
+							"  \"title\": \"UserResponse\",\r",
+							"  \"type\": \"object\",\r",
+							"  \"properties\": {\r",
+							"    \"data\": {\r",
+							"      \"type\": \"object\",\r",
+							"      \"properties\": {\r",
+							"        \"id\": { \"type\": \"integer\" },\r",
+							"        \"email\": { \"type\": \"string\", \"format\": \"email\" },\r",
+							"        \"first_name\": { \"type\": \"string\" },\r",
+							"        \"last_name\": { \"type\": \"string\" },\r",
+							"        \"avatar\": { \"type\": \"string\", \"format\": \"uri\" }\r",
+							"      },\r",
+							"      \"required\": [\"id\", \"email\", \"first_name\", \"last_name\", \"avatar\"]\r",
+							"    },\r",
+							"    \"support\": {\r",
+							"      \"type\": \"object\",\r",
+							"      \"properties\": {\r",
+							"        \"url\": { \"type\": \"string\", \"format\": \"uri\" },\r",
+							"        \"text\": { \"type\": \"string\" }\r",
+							"      },\r",
+							"      \"required\": [\"url\", \"text\"]\r",
+							"    }\r",
+							"  },\r",
+							"  \"required\": [\"data\", \"support\"]\r",
+							"};\r",
+							"\r",
+							"const response = pm.response.json();\r",
+							"const validate = ajv.compile(schema);\r",
+							"const valid = validate(response);\r",
+							"\r",
+							"pm.test(\"Post-login, verify user data response format\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"\r",
+							"    pm.expect(response.data).to.have.property(\"id\", 2);\r",
+							"    pm.expect(response.data).to.have.property(\"email\");\r",
+							"    pm.expect(response.data).to.have.property(\"first_name\");\r",
+							"    pm.expect(response.data).to.have.property(\"last_name\");\r",
+							"    pm.expect(response.data).to.have.property(\"avatar\");\r",
+							"\r",
+							"    pm.expect(valid, JSON.stringify(validate.errors)).to.be.true;\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "reqres-free-v1",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://reqres.in/api/users/2",
+					"protocol": "https",
+					"host": [
+						"reqres",
+						"in"
+					],
+					"path": [
+						"api",
+						"users",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Extra Unexpected Field in Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Extra Unexpected Field in Login\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property(\"token\");\r",
+							"\r",
+							"    pm.expect(Object.keys(jsonData)).to.not.include(\"expiry_time\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "reqres-free-v1",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"eve.holt@reqres.in\",\r\n  \"password\": \"cityslicka\",\r\n  \"unexpected_field\": \"hacker_attempt\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://reqres.in/api/login?x",
+					"protocol": "https",
+					"host": [
+						"reqres",
+						"in"
+					],
+					"path": [
+						"api",
+						"login"
+					],
+					"query": [
+						{
+							"key": "x",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Invalid Pagination Parameters in User List",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Invalid Pagination Parameters in User List\", function () {\r",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 400]);\r",
+							"\r",
+							"    pm.response.to.be.withBody;\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.be.an(\"object\");\r",
+							"\r",
+							"    var jsonData = pm.response.json();\r",
+							"    if (jsonData.data) {\r",
+							"        pm.expect(jsonData.data).to.be.an(\"array\");\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "reqres-free-v1",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "email=eve.holt@reqres.in&password=cityslicka",
+					"options": {
+						"raw": {
+							"language": "text"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://reqres.in/api/users?page=-1&per_page=99999",
+					"protocol": "https",
+					"host": [
+						"reqres",
+						"in"
+					],
+					"path": [
+						"api",
+						"users"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "-1"
+						},
+						{
+							"key": "per_page",
+							"value": "99999"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
