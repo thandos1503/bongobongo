@@ -10,8 +10,8 @@ This repository contains my submission for the QA assignment. It includes API te
 ├── pw-api-tests
 ├── Demo video
 ├── defects/ 
-│ ├── android_defect_001
-│ └── android_defect_002
+│ ├── android_defect_001.md
+│ └── android_defect_002.md
 └── PlaceBet_TestStrategy.docx
 
 markdown
